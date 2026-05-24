@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>La grande question</title>
+  <style>
+    /* ─── MODIFIE CES VARIABLES POUR CHANGER LE STYLE ─── */
+    :root {
+      --couleur-fond: #0f0f1a;
+      --couleur-texte: #f0eaff;
+      --couleur-texte-muted: #a89ec0;
+      --couleur-oui-fond: #1a3d2b;
+      --couleur-oui-texte: #4ade80;
+      --couleur-oui-bordure: #22c55e;
+      --couleur-non-fond: #3d1a1a;
+      --couleur-non-texte: #f87171;
+      --couleur-non-bordure: #ef4444;
+      --couleur-jsp-fond: #1e1e2e;
+      --couleur-jsp-texte: #a89ec0;
+      --couleur-jsp-bordure: #44415a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--couleur-fond);
+      color: var(--couleur-texte);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+      padding: 2rem;
+      text-align: center;
+      max-width: 600px;
+    }
+
+
+    #question {
+      font-size: 26px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    #sous-titre {
+      font-size: 15px;
+      color: var(--couleur-texte-muted);
+    }
+
+    .boutons {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 0.5rem;
+    }
+
+    .btn {
+      padding: 14px 32px;
+      border-radius: 10px;
+      border: 1.5px solid;
+      cursor: pointer;
+      font-size: 17px;
+      font-weight: 600;
+      transition: transform 0.2s ease, opacity 0.3s ease;
+      transform-origin: center;
+    }
+
+    #btn-oui {
+      background: var(--couleur-oui-fond);
+      color: var(--couleur-oui-texte);
+      border-color: var(--couleur-oui-bordure);
+    }
+
+    #btn-non {
+      background: var(--couleur-non-fond);
+      color: var(--couleur-non-texte);
+      border-color: var(--couleur-non-bordure);
+    }
+
+    #btn-jsp {
+      background: var(--couleur-jsp-fond);
+      color: var(--couleur-jsp-texte);
+      border-color: var(--couleur-jsp-bordure);
+    }
+
+    #message {
+      font-size: 18px;
+      font-weight: 500;
+      min-height: 2rem;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      color: var(--couleur-texte-muted);
+    }
+
+    #message.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!--   MODIFIE ICI : texte principal de la question -->
+    <div id="question">Est-ce que tu veux ressortir avec moi ?</div>
+    <!--   MODIFIE ICI : sous-titre / instruction        -->
+    <div id="sous-titre">Réponds honnêtement.</div>
+    <!-- ══════════════════════════════════════════════ -->
+
+    <div class="boutons">
+
+      <button class="btn" id="btn-oui" onclick="handleOui()">Oui 💚</button>
+      <button class="btn" id="btn-jsp" onclick="handleJsp()">Je sais pas 🤷</button>
+      <button class="btn" id="btn-non" onclick="handleNon()">Non 💔</button>
+    </div>
+
+    <div id="message"></div>
+
+  </div>
+
+  <script>
+    let ouiScale = 1;
+    let nonScale = 1;
+    let jspClics = 0;
+
+    const btnOui = document.getElementById('btn-oui');
+    const btnNon = document.getElementById('btn-non');
+    const btnJsp = document.getElementById('btn-jsp');
+    const msg    = document.getElementById('message');
+
+    // ══════════════════════════════════════════════════
+ 
+    const messagesOui = [
+      "Ouiiiii ! 🎉",
+      "Héhé !! 🥰",
+      "Je savais que tu allais faire le bon choix ! ✨",
+      "Le destin a parlé ! 💫",
+      "Je t'aime💍"
+    ];
+
+    const messagesJsp = [
+      "Tu es sûre 👀",
+      "Vraiment sûre",
+      "Tu devrais reflechir d'avantage 🤔",
+      "Je pense que tu devrais écouter la petite voix dans ta tête 😏",
+      "Allez, avoue 🌹"
+    ];
+    // ══════════════════════════════════════════════════
+
+    function afficherMessage(texte, couleur) {
+      msg.style.color = couleur;
+      msg.textContent = texte;
+      msg.classList.remove('visible');
+      void msg.offsetWidth;
+      msg.classList.add('visible');
+    }
+
+    function handleOui() {
+      ouiScale += 0.25;
+      btnOui.style.transform = `scale(${ouiScale})`;
+      const i = Math.min(Math.floor((ouiScale - 1) / 0.25) - 1, messagesOui.length - 1);
+      afficherMessage(messagesOui[i], 'var(--couleur-oui-texte)');
+    }
+
+    function handleNon() {
+      if (nonScale > 0.1) nonScale -= 0.15;
+      const s = Math.max(nonScale, 0.05);
+      btnNon.style.transform = `scale(${s})`;
+      btnNon.style.opacity = s;
+      if (s < 0.2) {
+        btnNon.style.pointerEvents = 'none';
+        afficherMessage("MHHH, 'var(--couleur-non-texte)');
+      } else {
+        afficherMessage("Ah... 😬", 'var(--couleur-non-texte)');
+      }
+    }
+
+    function handleJsp() {
+      ouiScale += 0.18;
+      btnOui.style.transform = `scale(${ouiScale})`;
+      const i = Math.min(jspClics, messagesJsp.length - 1);
+      afficherMessage(messagesJsp[i], 'var(--couleur-jsp-texte)');
+      jspClics++;
+    }
+  </script>
+</body>
+</html>
